@@ -1,0 +1,57 @@
+{
+	"info": {
+		"_postman_id": "740ef17b-b531-4912-bd02-f9d1b81eb6dc",
+		"name": "Take Home Code Challenge Scheduling API",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "30667930"
+	},
+	"item": [
+		{
+			"name": "Provider Submit Availability",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:3000/api/v0/appointments/clients/availability",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"api",
+						"v0",
+						"appointments",
+						"clients",
+						"availability"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get Provider Availability",
+			"request": {
+				"method": "GET",
+				"header": []
+			},
+			"response": []
+		},
+		{
+			"name": "Client Reserve Appointment",
+			"request": {
+				"method": "POST",
+				"header": []
+			},
+			"response": []
+		},
+		{
+			"name": "Client Confirm Appointment",
+			"request": {
+				"method": "PUT",
+				"header": []
+			},
+			"response": []
+		}
+	]
+}
