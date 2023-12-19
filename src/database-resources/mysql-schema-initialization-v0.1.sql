@@ -1,9 +1,9 @@
 drop table if exists t_appointment_availability;
 create table t_appointment_availability (
     appointment_id                  INT             AUTO_INCREMENT PRIMARY KEY,
-    provider_id                     INT             UNIQUE NOT NULL,
+    provider_id                     INT             NOT NULL,
     reservation_id                  INT             UNIQUE DEFAULT NULL,
-    appointment_start_time          DATETIME        DEFAULT NULL
+    appointment_start_time          DATETIME        NOT NULL
 );
 
 drop table if exists t_unconfirmed_appointments;
