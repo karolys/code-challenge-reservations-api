@@ -13,7 +13,6 @@ app.listen(PORT, () => {
 });
 
 app.post("/api/v0/appointments/providers/availability", async(req, res, next) => {
-    // TODO: Implement Provider availability submission
     // We can/should take provider name/id here, though unspecified the base case is seemingly a client scheduling any provider available,
     // doesn't necessarily have to be a specific one. Will add filter time permitted
 
@@ -56,7 +55,6 @@ app.post("/api/v0/appointments/providers/availability", async(req, res, next) =>
 });
 
 app.get("/api/v0/appointments/providers/availability", async (req, res, next) => {
-    // TODO: Implement Provider availability list endpoint
     // Optional Matrix Parameter of Provider ID on which to filter
 
     let availableAppointmentTimes = await appointmentsManagerService.retrieveAllAppointmentSlotsByProviderId();
@@ -68,21 +66,47 @@ app.get("/api/v0/appointments/providers/availability", async (req, res, next) =>
     res.send(response);
 });
 
-app.post("/api/v0/appointments/clients/reserve", (req, res, next) => {
+app.post("/api/v0/appointments/clients/reserve", async(req, res, next) => {
     // TODO: Implement Client reserve appointment endpoint
 
+    // { appointmentId: 1, clientEmail: "test.email@gmail.com" }
+    const requestBody = req.body;
+    let appointmentId = (requestBody.hasOwnProperty("appointmentId"))? requestBody.appointmentId : -1;
+    let clientEmail = (requestBody.hasOwnProperty("clientEmail"))? requestBody.clientEmail : null;
+
+    // Validate here to ensure we have a valid appointmentId and clientEmail
+    let reservationObject = await appointmentsManagerService.reserveAppointmentSlotByAppointmentId(appointmentId, clientEmail);
+
+    //Need to accept data structure that contains appointment time information
+    // Check to see if it's available, if not error
+    // Check to see if it exists in the temp table, if it does and hasn't been reservered and the time created is greater than 30 mins overwrite/delete and reinsert
+    // - Also need to update Appointments table to contain unconfirmed appointment ID
+    // Need to return ID of unconfirmed appointment which then needs to be passed to the confirmation endpoint within 30 minutes to lock in APT
+
     const response = {
-        info: "Client appointment reservation not yet implemented"
+        "reservation": reservationObject
     };
 
     res.send(response);
 });
 
-app.post("/api/v0/appointments/clients/confirm", (req, res, next) => {
+app.post("/api/v0/appointments/clients/confirm/:apptId", async(req, res, next) => {
     // TODO: Implement Client appointment confirmation
 
+    //Need to accept a path parameter and data structure containing true/false for reservation confirmation
+    // If path parameter unconfirmed appt doesn't exist, error
+    // If appointment id is expired (older than 30 mins), return failure and clear DB if needed
+    // If appointment ID is not found, return failure
+    // If appointment post status isCanceled remove from t_unconfirmed_appointments, and update time slot in t_appointment_availability
+    // If appointment post status isConfirmed remove from t_unconfirmed_appointments, insert into t_reservations, update time slot in t_appointment_availability
+
+    const unconfirmedApptId = req.params.apptId;
+
+    let confirmationStatus = await appointmentsManagerService.confirmAppointmentSlotByAppointmentId(unconfirmedApptId);
+
+
     const response = {
-        info: "Client appointment confirmation not yet implemented"
+        status: (confirmationStatus)? "Thank you, your appointment is confirmed!" : "We're sorry, your appointment couldn't be confirmed."
     };
 
     res.send(response);
