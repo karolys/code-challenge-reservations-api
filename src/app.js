@@ -46,7 +46,7 @@ app.post("/api/v0/appointments/providers/availability", async(req, res, next) =>
 
     // Need to validate no time zone shenanigans are happening, initial glance there appears to be a discrepancy despite being correctly inserted
     // Confirmed with additional testing it appears Timezones are being converted to UTC on insertion
-    // TODO: Unify/Clarify DateTime handling, currently submitted in Local Time on POST and converted to UTC on insert, and returned in UTC on GET
+    // TODO: Unify/Clarify DateTime handling, currently submitted in Local Time on POST and seemingly converted to UTC on insert, and returned in UTC on GET
     const response = {
         status: (submissionStatus)? "Availability successfully updated." : "Availability updated failed, please try again."
     };
@@ -67,8 +67,6 @@ app.get("/api/v0/appointments/providers/availability", async (req, res, next) =>
 });
 
 app.post("/api/v0/appointments/clients/reserve", async(req, res, next) => {
-    // TODO: Implement Client reserve appointment endpoint
-
     // { appointmentId: 1, clientEmail: "test.email@gmail.com" }
     const requestBody = req.body;
     let appointmentId = (requestBody.hasOwnProperty("appointmentId"))? requestBody.appointmentId : -1;
@@ -91,8 +89,6 @@ app.post("/api/v0/appointments/clients/reserve", async(req, res, next) => {
 });
 
 app.post("/api/v0/appointments/clients/confirm/:apptId", async(req, res, next) => {
-    // TODO: Implement Client appointment confirmation
-
     //Need to accept a path parameter and data structure containing true/false for reservation confirmation
     // If path parameter unconfirmed appt doesn't exist, error
     // If appointment id is expired (older than 30 mins), return failure and clear DB if needed
@@ -103,7 +99,6 @@ app.post("/api/v0/appointments/clients/confirm/:apptId", async(req, res, next) =
     const unconfirmedApptId = req.params.apptId;
 
     let confirmationStatus = await appointmentsManagerService.confirmAppointmentSlotByAppointmentId(unconfirmedApptId);
-
 
     const response = {
         status: (confirmationStatus)? "Thank you, your appointment is confirmed!" : "We're sorry, your appointment couldn't be confirmed."
