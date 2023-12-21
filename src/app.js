@@ -46,7 +46,8 @@ app.post("/api/v0/appointments/providers/availability", async(req, res, next) =>
 
     // Need to validate no time zone shenanigans are happening, initial glance there appears to be a discrepancy despite being correctly inserted
     // Confirmed with additional testing it appears Timezones are being converted to UTC on insertion
-    // TODO: Unify/Clarify DateTime handling, currently submitted in Local Time on POST and seemingly converted to UTC on insert, and returned in UTC on GET
+    // TODO: Unify/Clarify DateTime handling, currently submitted in Local Time on POST and seemingly stored in local time insert, and returned in UTC on GET
+    // which can lead to confusion, likely due to conversion to Javascript Date object
     const response = {
         status: (submissionStatus)? "Availability successfully updated." : "Availability updated failed, please try again."
     };

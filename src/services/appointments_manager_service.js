@@ -114,11 +114,19 @@ module.exports = {
         let reservationObj = { "status": false }
 
         // TODO: Update SQL query to ensure appointment time is 24 hours in advance or greater
-        const sqlQuery = `select * from t_appointment_availability where appointment_id = ${appointmentId};`;
+        const sqlQuery = `select * from t_appointment_availability where appointment_id = ${appointmentId} AND appointment_start_time >= now() + INTERVAL 1 DAY;`;
         const appointmentForAppointmentIdQueryResult =  await conn.promise().query(sqlQuery).catch( (err) => {
             console.log(`Error getting appointment for Appointment ID: ${appointmentId} - `  + err);
         });
         const appointmentsResultRows = appointmentForAppointmentIdQueryResult[0];
+
+        if (appointmentsResultRows && appointmentsResultRows.length === 0) {
+            reservationObj.unconfirmedAppointmentId = -1;
+            reservationObj.status = "failed: Appointment ID is unavailable";
+
+            return reservationObj;
+        }
+
         const targetAppointment = appointmentsResultRows[0];
         let unconfirmedAppointmentInsertRows;
 
